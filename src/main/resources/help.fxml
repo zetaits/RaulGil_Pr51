@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.zits.raulgil_pr51.HelpController"
+            prefWidth="800" prefHeight="600">
+
+    <top>
+        <ToolBar>
+            <Button text="Ayuda Rápida" onAction="#cargarAyudaBasica"/>
+            <Button text="Manual de Usuario" onAction="#cargarAyuda"/>
+            <Button text="Javadoc (Técnico)" onAction="#cargarJavadoc"/>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button text="Cerrar" onAction="#cerrar"/>
+        </ToolBar>
+    </top>
+
+    <center>
+        <WebView fx:id="webView"/>
+    </center>
+
+</BorderPane>

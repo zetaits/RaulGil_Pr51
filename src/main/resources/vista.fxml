@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.zits.raulgil_pr51.Controller"
+            stylesheets="@estilos.css"
+            prefWidth="950" prefHeight="700">
+
+    <top>
+        <HBox styleClass="header-panel" alignment="CENTER_LEFT" spacing="20">
+            <Label text="ElectriCity S.A. | Gestión Integral" styleClass="header-title"/>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button text="Ayuda / Soporte" onAction="#mostrarAyuda" style="-fx-font-size: 12px;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+            <tabs>
+                <Tab text="Gestión de Facturación">
+                    <HBox spacing="20" style="-fx-padding: 20;">
+                        <VBox styleClass="content-panel" minWidth="350" spacing="10">
+                            <Label text="Nueva Factura" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                            <Separator/>
+
+                            <Label text="Datos del Cliente" style="-fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                            
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="comboClientesExistentes" promptText="Seleccionar Cliente Existente" prefWidth="250" />
+                                <Button text="Limpiar/Nuevo" onAction="#limpiarSeleccionCliente" />
+                            </HBox>
+
+                            <GridPane hgap="10" vgap="8">
+                                <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtNombre" promptText="Nombre" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                <Label text="Apellidos:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtApellidos" promptText="Apellidos" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                <Label text="NIF:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtNif" promptText="DNI/NIF" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                <Label text="Dirección:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtDireccion" promptText="Dirección" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                            </GridPane>
+
+                            <Separator/>
+                            <Label text="Periodo y Fecha" style="-fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                            <GridPane hgap="10" vgap="8">
+                                <Label text="Fecha Emisión:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <DatePicker fx:id="dpFechaEmision" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                
+                                <Label text="Inicio Periodo:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <DatePicker fx:id="dpInicio" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                                <Label text="Fin Periodo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                <DatePicker fx:id="dpFin" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            </GridPane>
+
+                            <Separator/>
+                            <Label text="Consumos (kWh)" style="-fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                            <GridPane hgap="10" vgap="8">
+                                <Label text="Punta (€0.30):" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtKwhPunta" text="100" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                <Label text="Llano (€0.20):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtKwhLlano" text="150" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                <Label text="Valle (€0.10):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                <TextField fx:id="txtKwhValle" text="200" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            </GridPane>
+
+                            <Button text="Guardar Factura" onAction="#guardarDatos" maxWidth="Infinity"/>
+                            <Label fx:id="lblMensaje" text="" style="-fx-text-fill: green;"/>
+                        </VBox>
+
+                        <VBox styleClass="content-panel" HBox.hgrow="ALWAYS" spacing="10">
+                            <Label text="Histórico de Facturas" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                            <TableView fx:id="tablaFacturas" VBox.vgrow="ALWAYS">
+                                <columns>
+                                    <TableColumn text="ID" fx:id="colId" prefWidth="50">
+                                        <cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn text="Cliente" fx:id="colCliente" prefWidth="150">
+                                        <cellValueFactory><PropertyValueFactory property="cliente" /></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn text="Fecha Emisión" fx:id="colFecha" prefWidth="100">
+                                        <cellValueFactory><PropertyValueFactory property="fecha" /></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn text="Total (IVA inc) (€)" fx:id="colTotal" prefWidth="120">
+                                        <cellValueFactory><PropertyValueFactory property="total" /></cellValueFactory>
+                                    </TableColumn>
+                                </columns>
+                            </TableView>
+                            <HBox spacing="10" alignment="CENTER_RIGHT">
+                                <Button text="Refrescar Tabla" onAction="#cargarTabla"/>
+                                <Button text="Eliminar Seleccionada" onAction="#eliminarFactura" styleClass="button-danger"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </Tab>
+
+                <Tab text="Imprimir PDF" onSelectionChanged="#alCambiarPestana">
+                    <VBox spacing="30" style="-fx-padding: 40;" alignment="TOP_CENTER">
+                        <Label text="Centro de Impresión" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+                        <VBox styleClass="content-panel" maxWidth="500" spacing="20" alignment="CENTER">
+                            <Label text="1. Seleccione Cliente:" style="-fx-font-size: 14px;"/>
+                            <ComboBox fx:id="comboClienteImpresion" prefWidth="300" promptText="-- Seleccionar Cliente --"/>
+                            
+                            <Label text="2. Seleccione Factura:" style="-fx-font-size: 14px;"/>
+                            <ComboBox fx:id="comboFacturaImpresion" prefWidth="300" promptText="-- Seleccionar Factura --" disable="true"/>
+                            
+                            <VBox fx:id="panelDetalles" styleClass="info-card" visible="false" maxWidth="300" alignment="CENTER_LEFT" spacing="5">
+                                <Label text="Detalles del Documento:" style="-fx-font-weight: bold;"/>
+                                <Label fx:id="lblResumenCliente" text="Cliente: ..."/>
+                                <Label fx:id="lblResumenTotal" text="Importe Total: ..."/>
+                            </VBox>
+                            <Separator/>
+                            <Button fx:id="btnGenerarPDF" text="Generar y Visualizar PDF" onAction="#generarFactura" defaultButton="true" disable="true"/>
+                        </VBox>
+                    </VBox>
+                </Tab>
+
+                <Tab text="Análisis de Consumo">
+                    <VBox spacing="15" style="-fx-padding: 20;">
+                        <HBox spacing="15" alignment="CENTER_LEFT" styleClass="content-panel">
+                            <Label text="Filtros:" style="-fx-font-weight: bold;"/>
+
+                            <Label text="Desde:"/>
+                            <DatePicker fx:id="dpAnalisisInicio" prefWidth="120"/>
+
+                            <Label text="Hasta:"/>
+                            <DatePicker fx:id="dpAnalisisFin" prefWidth="120"/>
+
+                            <Label text="Tramo:"/>
+                            <ComboBox fx:id="comboTramo" prefWidth="100"/>
+
+                            <Separator orientation="VERTICAL"/>
+                            <Button text="Analizar Datos" onAction="#cargarGraficoAnalisis"/>
+                        </HBox>
+
+                        <HBox spacing="15" VBox.vgrow="ALWAYS">
+                            <BarChart fx:id="graficoJavaFX" styleClass="content-panel" legendVisible="false" HBox.hgrow="ALWAYS">
+                                <xAxis><CategoryAxis label="Tramo" /></xAxis>
+                                <yAxis><NumberAxis label="Consumo Medio (kWh)" /></yAxis>
+                            </BarChart>
+                            
+                            <PieChart fx:id="graficoSectores" styleClass="content-panel" title="Distribución" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 5 10; -fx-background-color: #ddd;">
+            <Button text="Resetear Base de Datos" onAction="#resetearBDCompleta"
+                    style="-fx-font-size: 11px; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

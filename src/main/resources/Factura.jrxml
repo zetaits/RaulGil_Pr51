@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="Factura" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+    
+    <!-- Subdataset -->
+    <subDataset name="dataset1">
+        <field name="mes" class="java.lang.String"/>
+        <field name="total" class="java.lang.Double"/>
+    </subDataset>
+
+    <parameter name="idFactura" class="java.lang.Integer"/>
+    <parameter name="dsGastos" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+    <queryString>
+        <![CDATA[SELECT c.nombre || ' ' || c.apellidos as cliente, c.nif, c.direccion,
+                 f.id_factura, f.fecha_emision, f.periodo_inicio, f.periodo_fin,
+                 d.tramo, d.consumo_kwh, d.precio_kwh, (d.consumo_kwh * d.precio_kwh) as importe
+                 FROM FACTURA f
+                 JOIN CLIENTE c ON f.id_cliente = c.id_cliente
+                 JOIN DETALLE_FACTURA d ON f.id_factura = d.id_factura
+                 WHERE f.id_factura = $P{idFactura}]]>
+    </queryString>
+    <field name="cliente" class="java.lang.String"/>
+    <field name="nif" class="java.lang.String"/>
+    <field name="direccion" class="java.lang.String"/>
+    <field name="id_factura" class="java.lang.Integer"/>
+    <field name="fecha_emision" class="java.lang.String"/>
+    <field name="tramo" class="java.lang.String"/>
+    <field name="consumo_kwh" class="java.lang.Double"/>
+    <field name="precio_kwh" class="java.lang.Double"/>
+    <field name="importe" class="java.lang.Double"/>
+    <variable name="totalFactura" class="java.lang.Double" calculation="Sum">
+        <variableExpression><![CDATA[$F{importe}]]></variableExpression>
+    </variable>
+
+    <title>
+        <band height="120">
+            <!-- Header Background (Dark Purple) -->
+            <rectangle>
+                <reportElement x="-20" y="-20" width="595" height="80" backcolor="#6A1B9A" mode="Opaque"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            
+            <staticText>
+                <reportElement x="0" y="0" width="300" height="40" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle"><font size="26" isBold="true"/></textElement>
+                <text><![CDATA[ElectriCity S.A.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="40" width="300" height="20" forecolor="#E1BEE7"/>
+                <textElement><font size="12"/></textElement>
+                <text><![CDATA[Energía Inteligente para tu Hogar]]></text>
+            </staticText>
+
+            <!-- Invoice Details (Top Right in Header) -->
+            <textField>
+                <reportElement x="350" y="10" width="200" height="20" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Right"><font size="14" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["FACTURA Nº " + $F{id_factura}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="30" width="200" height="20" forecolor="#E1BEE7"/>
+                <textElement textAlignment="Right"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="90">
+            <!-- Client Info Box -->
+            <rectangle radius="10">
+                <reportElement x="0" y="0" width="555" height="75" backcolor="#F3E5F5" mode="Opaque"/>
+                <graphicElement><pen lineWidth="0.5" lineColor="#AB47BC"/></graphicElement>
+            </rectangle>
+            
+            <staticText>
+                <reportElement x="15" y="10" width="100" height="20" forecolor="#6A1B9A"/>
+                <textElement><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Facturado a:]]></text>
+            </staticText>
+            
+            <textField>
+                <reportElement x="15" y="30" width="250" height="20"/>
+                <textElement><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="15" y="50" width="250" height="20"/>
+                <textElement><font size="11"/></textElement>
+                <textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="300" y="30" width="200" height="20"/>
+                <textElement textAlignment="Right"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA["NIF: " + $F{nif}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <band height="30">
+            <!-- Table Header Background -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="30" backcolor="#6A1B9A" mode="Opaque"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            
+            <staticText><reportElement x="10" y="0" width="130" height="30" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font isBold="true"/></textElement><text><![CDATA[Concepto / Tramo]]></text></staticText>
+            <staticText><reportElement x="140" y="0" width="130" height="30" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font isBold="true"/></textElement><text><![CDATA[Consumo (kWh)]]></text></staticText>
+            <staticText><reportElement x="270" y="0" width="130" height="30" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font isBold="true"/></textElement><text><![CDATA[Precio (€/kWh)]]></text></staticText>
+            <staticText><reportElement x="400" y="0" width="145" height="30" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle" textAlignment="Right"><font isBold="true"/></textElement><text><![CDATA[Importe (€)]]></text></staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="25">
+            <textField><reportElement x="10" y="0" width="130" height="25"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{tramo}.toUpperCase()]]></textFieldExpression></textField>
+            <textField><reportElement x="140" y="0" width="130" height="25"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{consumo_kwh}]]></textFieldExpression></textField>
+            <textField><reportElement x="270" y="0" width="130" height="25"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{precio_kwh}]]></textFieldExpression></textField>
+            <textField><reportElement x="400" y="0" width="145" height="25"/><textElement verticalAlignment="Middle" textAlignment="Right"/><textFieldExpression><![CDATA[String.format("%.2f", $F{importe})]]></textFieldExpression></textField>
+            
+            <!-- Bottom Line for each row -->
+            <line>
+                <reportElement x="0" y="24" width="555" height="1" forecolor="#E0E0E0"/>
+            </line>
+        </band>
+    </detail>
+
+    <summary>
+        <band height="450">
+            <!-- Totals Section -->
+            <rectangle radius="5">
+                <reportElement x="300" y="20" width="255" height="60" backcolor="#F3E5F5" mode="Opaque"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            
+            <textField>
+                <reportElement x="310" y="25" width="235" height="20"/>
+                <textElement textAlignment="Right"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA["Subtotal: " + String.format("%.2f €", $V{totalFactura})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="310" y="50" width="235" height="25" forecolor="#6A1B9A"/>
+                <textElement textAlignment="Right"><font size="16" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["TOTAL (IVA incluido): " + String.format("%.2f €", $V{totalFactura} * 1.21)]]></textFieldExpression>
+            </textField>
+
+            <!-- Charts -->
+            <pieChart>
+                <chart evaluationTime="Report">
+                    <reportElement x="0" y="100" width="270" height="220"/>
+                    <chartTitle><titleExpression><![CDATA["Distribución de Consumo"]]></titleExpression></chartTitle>
+                    <chartSubtitle/>
+                    <chartLegend/>
+                </chart>
+                <pieDataset>
+                    <keyExpression><![CDATA[$F{tramo}]]></keyExpression>
+                    <valueExpression><![CDATA[$F{consumo_kwh}]]></valueExpression>
+                    <labelExpression><![CDATA[$F{tramo} + " " + String.format("%.0f%%", ($F{consumo_kwh}/($V{totalFactura}/$F{precio_kwh}))*100)]]></labelExpression>
+                </pieDataset>
+                <piePlot>
+                    <plot/>
+                    <itemLabel/>
+                </piePlot>
+            </pieChart>
+            
+            <barChart>
+                <chart evaluationTime="Report">
+                    <reportElement x="280" y="100" width="275" height="220"/>
+                    <chartTitle><titleExpression><![CDATA["Gasto Historico (Últ. 12 Meses)"]]></titleExpression></chartTitle>
+                    <chartSubtitle/>
+                    <chartLegend/>
+                </chart>
+                <categoryDataset>
+                    <dataset>
+                        <datasetRun subDataset="dataset1" uuid="a7f34f3c-8a2e-4a6b-9c6d-5e20f1b9b3c9">
+                            <dataSourceExpression><![CDATA[$P{dsGastos}]]></dataSourceExpression>
+                        </datasetRun>
+                    </dataset>
+                    <categorySeries>
+                        <seriesExpression><![CDATA["Total Mes"]]></seriesExpression>
+                        <categoryExpression><![CDATA[$F{mes}]]></categoryExpression>
+                        <valueExpression><![CDATA[$F{total}]]></valueExpression>
+                    </categorySeries>
+                </categoryDataset>
+                <barPlot>
+                    <plot/>
+                    <itemLabel/>
+                    <categoryAxisFormat>
+                        <axisFormat>
+                            <tickLabelFont>
+                                <font size="6"/>
+                            </tickLabelFont>
+                        </axisFormat>
+                    </categoryAxisFormat>
+                    <valueAxisFormat><axisFormat/></valueAxisFormat>
+                </barPlot>
+            </barChart>
+        </band>
+    </summary>
+</jasperReport>
